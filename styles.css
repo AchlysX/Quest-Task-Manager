@@ -34,6 +34,10 @@ h1, h2, h3 { margin: 0; }
 .row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
 .row.end { justify-content: flex-end; }
 
+/* ---------- icons (inline SVG, see icons.js) ---------- */
+.i { width: 1em; height: 1em; flex: none; vertical-align: -.14em; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.boot .i, .logo .i, .brand .i { color: var(--gold); fill: currentColor; }
+
 /* ---------- boot / login ---------- */
 .boot { position: fixed; inset: 0; display: grid; place-items: center; font-size: 64px; background: var(--bg); z-index: 5; }
 .login { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
@@ -42,7 +46,7 @@ h1, h2, h3 { margin: 0; }
   border-radius: 22px; padding: 28px 24px; display: grid; gap: 14px;
   box-shadow: 0 20px 60px rgba(0, 0, 0, .45);
 }
-.login-card .logo { font-size: 44px; text-align: center; }
+.login-card .logo { font-size: 44px; line-height: 1; text-align: center; }
 .login-card h1 { text-align: center; font-size: 28px; letter-spacing: .5px; }
 .login-card p { margin: 0; text-align: center; }
 label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
@@ -81,7 +85,7 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
   flex: 1; background: none; border: 0; border-radius: 12px; padding: 8px 4px;
   display: grid; justify-items: center; gap: 2px; color: var(--muted); font-size: 12px; font-weight: 600;
 }
-.nav-b .ic { font-size: 22px; line-height: 1; }
+.nav-b .ic { font-size: 22px; line-height: 1; display: grid; }
 .nav-b.on { color: var(--text); background: var(--card2); }
 
 .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px; }
@@ -146,7 +150,7 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 .tag.s-L { color: var(--gold); }
 .tag.late { color: var(--red); border-color: #6b2a3a; }
 .tag.dodge { color: #ffb86b; border-color: #6b4a2a; }
-.more { background: none; border: 0; font-size: 22px; color: var(--muted); width: 40px; height: 40px; border-radius: 10px; }
+.more { background: none; border: 0; font-size: 22px; color: var(--muted); width: 40px; height: 40px; border-radius: 10px; padding: 0; display: grid; place-items: center; }
 .t-actions { grid-column: 1 / -1; display: flex; gap: 8px; flex-wrap: wrap; padding-top: 4px; }
 .empty { text-align: center; color: var(--muted); padding: 22px 10px; }
 .section-h { display: flex; justify-content: space-between; align-items: center; font-weight: 800; }
@@ -183,7 +187,8 @@ input:focus, select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px r
 .stat span { font-size: 12px; color: var(--muted); }
 .badges { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 10px; }
 .badge { background: var(--bg2); border: 1px solid var(--line); border-radius: 14px; padding: 12px; text-align: center; display: grid; gap: 4px; }
-.badge .b-ic { font-size: 30px; }
+.badge .b-ic { font-size: 30px; line-height: 1; color: var(--gold); }
+.badge.locked .b-ic { color: var(--muted); }
 .badge .b-n { font-weight: 800; font-size: 14px; }
 .badge .b-d { font-size: 12px; color: var(--muted); }
 .badge.locked { opacity: .5; filter: grayscale(1); }

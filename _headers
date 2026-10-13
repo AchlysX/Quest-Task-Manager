@@ -1,0 +1,14 @@
+# Cloudflare Pages response headers.
+# The service worker and page shell must always be revalidated, otherwise devices can get stuck on an old version.
+/sw.js
+  Cache-Control: no-cache
+
+/
+  Cache-Control: no-cache
+
+/index.html
+  Cache-Control: no-cache
+
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin

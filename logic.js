@@ -66,18 +66,18 @@
   }
 
   const BADGES = [
-    { id: 'first',   icon: '🗡️', name: 'First Blood',    desc: 'Complete your first quest',        test: (s) => s.done >= 1 },
-    { id: 'hat',     icon: '🎩', name: 'Hat Trick',      desc: 'Complete 3 quests in one day',     test: (s) => s.bestDay >= 3 },
-    { id: 'ten',     icon: '🔟', name: 'Double Digits',  desc: 'Complete 10 quests',               test: (s) => s.done >= 10 },
-    { id: 'fifty',   icon: '⚙️', name: 'The Grind',      desc: 'Complete 50 quests',               test: (s) => s.done >= 50 },
-    { id: 'boss1',   icon: '👹', name: 'Boss Slayer',    desc: 'Defeat a daily boss',              test: (s) => s.bosses >= 1 },
-    { id: 'boss5',   icon: '🐉', name: 'Dragon Hunter',  desc: 'Defeat 5 bosses',                  test: (s) => s.bosses >= 5 },
-    { id: 'streak3', icon: '🔥', name: 'On Fire',        desc: 'Reach a 3-day streak',             test: (s) => s.best >= 3 },
-    { id: 'streak7', icon: '⚡', name: 'Week Warrior',   desc: 'Reach a 7-day streak',             test: (s) => s.best >= 7 },
-    { id: 'streak30',icon: '👑', name: 'Unstoppable',    desc: 'Reach a 30-day streak',            test: (s) => s.best >= 30 },
-    { id: 'focus1',  icon: '🎯', name: 'Deep Diver',     desc: 'Finish a focus session',           test: (s) => s.focusSessions >= 1 },
-    { id: 'focus10', icon: '🧠', name: 'Monk Mode',      desc: 'Focus for 10 hours total',         test: (s) => s.focusMin >= 600 },
-    { id: 'lvl5',    icon: '⭐', name: 'Level 5',        desc: 'Reach level 5',                    test: (s) => s.level.level >= 5 },
+    { id: 'first',   icon: 'sword',  name: 'First Blood',    desc: 'Complete your first quest',        test: (s) => s.done >= 1 },
+    { id: 'hat',     icon: 'hat',    name: 'Hat Trick',      desc: 'Complete 3 quests in one day',     test: (s) => s.bestDay >= 3 },
+    { id: 'ten',     icon: 'ten',    name: 'Double Digits',  desc: 'Complete 10 quests',               test: (s) => s.done >= 10 },
+    { id: 'fifty',   icon: 'hammer', name: 'The Grind',      desc: 'Complete 50 quests',               test: (s) => s.done >= 50 },
+    { id: 'boss1',   icon: 'boss',   name: 'Boss Slayer',    desc: 'Defeat a daily boss',              test: (s) => s.bosses >= 1 },
+    { id: 'boss5',   icon: 'dragon', name: 'Dragon Hunter',  desc: 'Defeat 5 bosses',                  test: (s) => s.bosses >= 5 },
+    { id: 'streak3', icon: 'flame',  name: 'On Fire',        desc: 'Reach a 3-day streak',             test: (s) => s.best >= 3 },
+    { id: 'streak7', icon: 'bolt',   name: 'Week Warrior',   desc: 'Reach a 7-day streak',             test: (s) => s.best >= 7 },
+    { id: 'streak30',icon: 'crown',  name: 'Unstoppable',    desc: 'Reach a 30-day streak',            test: (s) => s.best >= 30 },
+    { id: 'focus1',  icon: 'target', name: 'Deep Diver',     desc: 'Finish a focus session',           test: (s) => s.focusSessions >= 1 },
+    { id: 'focus10', icon: 'hourglass', name: 'Monk Mode',      desc: 'Focus for 10 hours total',         test: (s) => s.focusMin >= 600 },
+    { id: 'lvl5',    icon: 'star',   name: 'Level 5',        desc: 'Reach level 5',                    test: (s) => s.level.level >= 5 },
   ];
 
   /**

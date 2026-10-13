@@ -41,13 +41,20 @@ window.APP_CONFIG = {
 ```
 Never paste a `service_role` / secret key. The anon/publishable key is meant to be public.
 
-### 6. Deploy on GitHub Pages
-1. Create a new GitHub repository (public or private; GitHub Pages on private repos needs a paid plan, so public is simplest).
-2. Upload every file in this folder (keep the `icons/` and `vendor/` folders) to the repo root.
-3. Repo **Settings → Pages → Build and deployment**: Source = "Deploy from a branch", Branch = `main`, folder = `/ (root)`. Save.
-4. After a minute your app is live at `https://<your-username>.github.io/<repo-name>/`.
+### 6. Deploy on Cloudflare Pages (quests.benlafqih.com)
+The app is a plain static site: no build step. The domain `benlafqih.com` is already on Cloudflare, so the subdomain is two clicks.
 
-(Netlify Drop works too: drag this folder onto https://app.netlify.com/drop.)
+1. Push this repo to GitHub (`git push`).
+2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Import an existing Git repository**. Authorise GitHub and pick `Quest-Task-Manager`.
+3. Build settings: Framework preset **None**, build command **empty**, build output directory **`/`**. Click **Save and Deploy**. You get a `*.pages.dev` URL; check the app loads there.
+4. In the new Pages project: **Custom domains → Set up a custom domain** → enter `quests.benlafqih.com` → **Activate domain**. Cloudflare creates the DNS record and the HTTPS certificate itself (a minute or two).
+
+From then on every `git push` to `main` redeploys automatically.
+
+Notes:
+- `_headers` in this folder tells Cloudflare never to hard-cache `sw.js` / `index.html`, so updates reach devices.
+- Nothing to change in Supabase: email + password login works from any domain.
+- Storage is per-domain. If you used the app on another URL before, log in again on `quests.benlafqih.com` (your quests come back from the cloud) and re-add it to the Home Screen from the new address.
 
 ### 7. Install it on your iPhone
 1. Open the URL in **Safari**.
@@ -72,7 +79,10 @@ On desktop Chrome/Edge: use the install icon in the address bar.
 - Logging out keeps your data in the cloud; logging back in restores it.
 
 ## Updating the app later
-Edit the files, push to GitHub, and **bump `VERSION` in `sw.js`** (e.g. `quest-v2`) so devices drop their old cache. Installed apps pick up the new version on the second open.
+Edit the files, **bump `VERSION` in `sw.js`** (e.g. `quest-v3`), and push to GitHub (Cloudflare redeploys by itself) so devices drop their old cache. Installed apps pick up the new version on the second open.
+
+## Icons
+No emoji anywhere: every icon is an inline SVG from `icons.js` (`Quest.icon('flame')`), drawn in the current text colour. Add a new one by adding a 24×24 path to the `P` table in that file.
 
 ## Try it locally first
 Leave `config.js` empty to run in local-only mode (no login, no sync):

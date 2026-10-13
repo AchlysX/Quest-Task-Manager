@@ -3,6 +3,7 @@
   'use strict';
 
   const Q = window.Quest;
+  const ic = Q.icon;
   const CFG = window.APP_CONFIG || {};
   const configured = !!(CFG.SUPABASE_URL && CFG.SUPABASE_ANON_KEY);
   const LOCAL_MODE = !configured;
@@ -119,7 +120,7 @@
     } else {
       liveTasks().forEach((o) => { if (o.boss_date === today && !o.completed_at) { o.boss_date = null; touch('tasks', o); } });
       t.boss_date = today; touch('tasks', t);
-      toast('👹 Boss set. ×3 XP if you beat it today');
+      toast('Boss set. ×' + Q.BOSS_MULT + ' XP if you beat it today', '', 'boss');
     }
     ui.openRow = null;
     commit();
@@ -141,13 +142,14 @@
     toast('+' + gained + ' XP' + (headline ? ' · ' + headline : ''));
     const fresh = Q.BADGES.filter((b) => after.badges.has(b.id) && !before.badges.has(b.id));
     if (after.level.level > before.level.level) showLevelUp(after, fresh);
-    else fresh.forEach((b, i) => setTimeout(() => toast(b.icon + ' Badge: ' + b.name, 'badge-t'), 700 + i * 900));
+    else fresh.forEach((b, i) => setTimeout(() => toast('Badge: ' + b.name, 'badge-t', b.icon), 700 + i * 900));
   }
 
-  function toast(text, cls) {
+  function toast(text, cls, icon) {
     const el = document.createElement('div');
     el.className = 'toast ' + (cls || '');
-    el.textContent = text;
+    if (icon) el.innerHTML = ic(icon) + ' ';
+    el.appendChild(document.createTextNode(text));
     $('#toasts').appendChild(el);
     setTimeout(() => el.remove(), 2500);
   }
@@ -218,7 +220,7 @@
     modal(
       '<div class="lvl"><div class="muted small">LEVEL UP</div><div class="big-n">' + after.level.level + '</div>' +
       '<h2>' + esc(Q.titleFor(after.level.level)) + '</h2>' +
-      (freshBadges.length ? '<div class="muted">New badge' + (freshBadges.length > 1 ? 's' : '') + ': ' + freshBadges.map((b) => b.icon + ' ' + esc(b.name)).join(', ') + '</div>' : '') +
+      (freshBadges.length ? '<div class="muted">New badge' + (freshBadges.length > 1 ? 's' : '') + ': ' + freshBadges.map((b) => ic(b.icon) + ' ' + esc(b.name)).join(', ') + '</div>' : '') +
       '<button class="btn primary big" data-act="closeModal">Keep going</button></div>'
     );
   }
@@ -282,9 +284,9 @@
 
   /* ------------------------------------------------------------------ rendering */
   const NAV = [
-    { id: 'quests', icon: '⚔️', label: 'Quests' },
-    { id: 'focus', icon: '🎯', label: 'Focus' },
-    { id: 'hero', icon: '🏅', label: 'Hero' },
+    { id: 'quests', icon: 'swords', label: 'Quests' },
+    { id: 'focus', icon: 'target', label: 'Focus' },
+    { id: 'hero', icon: 'medal', label: 'Hero' },
   ];
 
   function render() {
@@ -292,7 +294,7 @@
     const a = document.activeElement;
     const keep = a && a.id === 'newTitle' ? { s: a.selectionStart, e: a.selectionEnd } : null;
     const navHtml = NAV.map((n) =>
-      '<button class="nav-b ' + (ui.tab === n.id ? 'on' : '') + '" data-act="tab" data-tab="' + n.id + '"><span class="ic">' + n.icon + '</span><span>' + n.label + '</span></button>'
+      '<button class="nav-b ' + (ui.tab === n.id ? 'on' : '') + '" data-act="tab" data-tab="' + n.id + '"><span class="ic">' + ic(n.icon) + '</span><span>' + n.label + '</span></button>'
     ).join('');
     $('#sideNav').innerHTML = navHtml;
     $('#tabbar').innerHTML = navHtml;
@@ -312,7 +314,7 @@
     if (s === 'syncing') return '<span class="pill">Syncing…</span>';
     if (s === 'offline') return '<span class="pill warn">Offline' + (p ? ' · ' + p + ' pending' : '') + '</span>';
     if (s === 'error') return '<span class="pill bad">Sync error' + (p ? ' · ' + p + ' pending' : '') + '</span>';
-    if (s === 'synced' && !p) return '<span class="pill ok">✓ Synced</span>';
+    if (s === 'synced' && !p) return '<span class="pill ok">' + ic('check') + ' Synced</span>';
     return '<span class="pill">' + (p ? p + ' pending' : '…') + '</span>';
   }
 
@@ -322,10 +324,10 @@
       '<div class="hud-top"><div class="orb">' + L.level + '</div>' +
       '<div class="hud-id"><div class="hud-title">' + esc(Q.titleFor(L.level)) + '</div>' +
       '<div class="muted small">Level ' + L.level + ' · ' + s.totalXp + ' XP total</div></div>' +
-      '<div class="chip fire" title="Current streak">🔥 ' + s.streak + '</div></div>' +
+      '<div class="chip fire" title="Current streak">' + ic('flame') + ' ' + s.streak + '</div></div>' +
       '<div class="bar"><i style="width:' + Math.round(L.pct * 100) + '%"></i></div>' +
       '<div class="hud-row"><span class="small muted">' + L.into + ' / ' + L.span + ' XP to level ' + (L.level + 1) + '</span>' +
-      '<span class="small">Today ' + Math.min(s.doneToday, goal) + '/' + goal + ' ✔' + syncPill() + '</span></div>';
+      '<span class="small">Today ' + Math.min(s.doneToday, goal) + '/' + goal + ' ' + ic('check') + syncPill() + '</span></div>';
   }
 
   function taskSort(a, b) {
@@ -346,20 +348,20 @@
     const id = esc(t.id);
     return (
       '<li class="task ' + (done ? 'done' : '') + (isBoss ? ' is-boss' : '') + '">' +
-      '<button class="check" data-act="toggle" data-id="' + id + '" aria-label="' + (done ? 'Mark not done' : 'Complete quest') + '">' + (done ? '✓' : '') + '</button>' +
+      '<button class="check" data-act="toggle" data-id="' + id + '" aria-label="' + (done ? 'Mark not done' : 'Complete quest') + '">' + (done ? ic('check') : '') + '</button>' +
       '<div class="t-body" data-act="more" data-id="' + id + '">' +
-      '<div class="t-title">' + (isBoss ? '👹 ' : '') + esc(t.title) + '</div>' +
+      '<div class="t-title">' + (isBoss ? ic('boss') + ' ' : '') + esc(t.title) + '</div>' +
       '<div class="t-meta"><span class="tag s-' + t.size + '">' + Q.SIZES[t.size].label + ' · ' + (done ? t.xp : Q.taskXp(t.size, isBoss)) + ' XP</span>' +
-      (t.due ? '<span class="tag ' + (overdue ? 'late' : '') + '">📅 ' + esc(fmtDue(t.due)) + '</span>' : '') +
+      (t.due ? '<span class="tag ' + (overdue ? 'late' : '') + '">' + ic('calendar') + ' ' + esc(fmtDue(t.due)) + '</span>' : '') +
       (!done && dodged >= 2 ? '<span class="tag dodge">dodged ' + dodged + 'd</span>' : '') +
       '</div></div>' +
-      '<button class="more" data-act="more" data-id="' + id + '" aria-label="More actions">⋯</button>' +
+      '<button class="more" data-act="more" data-id="' + id + '" aria-label="More actions">' + ic('more') + '</button>' +
       (open
         ? '<div class="t-actions">' +
-          (done ? '' : '<button class="btn sm" data-act="boss" data-id="' + id + '">' + (isBoss ? 'Unset boss' : '👹 Make boss') + '</button>' +
-            '<button class="btn sm" data-act="focus-task" data-id="' + id + '">▶ Focus</button>') +
-          '<button class="btn sm" data-act="edit" data-id="' + id + '">✎ Edit</button>' +
-          '<button class="btn sm danger" data-act="delete" data-id="' + id + '">🗑 Delete</button></div>'
+          (done ? '' : '<button class="btn sm" data-act="boss" data-id="' + id + '">' + (isBoss ? 'Unset boss' : ic('boss') + ' Make boss') + '</button>' +
+            '<button class="btn sm" data-act="focus-task" data-id="' + id + '">' + ic('play') + ' Focus</button>') +
+          '<button class="btn sm" data-act="edit" data-id="' + id + '">' + ic('pencil') + ' Edit</button>' +
+          '<button class="btn sm danger" data-act="delete" data-id="' + id + '">' + ic('trash') + ' Delete</button></div>'
         : '') +
       '</li>'
     );
@@ -370,22 +372,22 @@
     if (boss) {
       const d = daysSince(boss.created_at);
       return (
-        '<div class="card boss"><div class="boss-tag">👹 TODAY\'S BOSS · ×' + Q.BOSS_MULT + ' XP</div>' +
+        '<div class="card boss"><div class="boss-tag">' + ic('boss') + ' TODAY\'S BOSS · ×' + Q.BOSS_MULT + ' XP</div>' +
         '<div class="boss-title">' + esc(boss.title) + '</div>' +
         '<div class="muted small">Worth ' + Q.taskXp(boss.size, true) + ' XP' + (d >= 2 ? ' · dodged for ' + d + ' days' : '') + '</div>' +
-        '<div class="row"><button class="btn primary" data-act="toggle" data-id="' + esc(boss.id) + '">⚔️ Defeat it</button>' +
-        '<button class="btn" data-act="focus-task" data-id="' + esc(boss.id) + '">▶ Focus on it</button></div></div>'
+        '<div class="row"><button class="btn primary" data-act="toggle" data-id="' + esc(boss.id) + '">' + ic('swords') + ' Defeat it</button>' +
+        '<button class="btn" data-act="focus-task" data-id="' + esc(boss.id) + '">' + ic('play') + ' Focus on it</button></div></div>'
       );
     }
     const won = allTasks().some((t) => t.boss_win && t.completed_at && Q.dayKey(t.completed_at) === today);
-    if (won) return '<div class="card boss won"><div class="boss-tag">🏆 BOSS DEFEATED</div><div class="boss-title">Today is a win.</div><div class="muted small">Everything else is bonus XP.</div></div>';
+    if (won) return '<div class="card boss won"><div class="boss-tag">' + ic('trophy') + ' BOSS DEFEATED</div><div class="boss-title">Today is a win.</div><div class="muted small">Everything else is bonus XP.</div></div>';
     if (active.length) {
       const oldest = active.slice().sort((a, b) => (a.created_at < b.created_at ? -1 : 1))[0];
       return (
         '<div class="card boss idle"><div class="boss-tag">PICK TODAY\'S BOSS</div>' +
         '<div class="muted">Choose the quest you\'ve been avoiding the longest. Beating it pays ×' + Q.BOSS_MULT + ' XP.</div>' +
-        '<div><button class="btn primary" data-act="boss" data-id="' + esc(oldest.id) + '">👹 Fight: ' + esc(oldest.title.length > 40 ? oldest.title.slice(0, 40) + '…' : oldest.title) + (daysSince(oldest.created_at) >= 1 ? ' (' + daysSince(oldest.created_at) + 'd old)' : '') + '</button></div>' +
-        '<div class="muted small">Or open ⋯ on any quest and tap "Make boss".</div></div>'
+        '<div><button class="btn primary" data-act="boss" data-id="' + esc(oldest.id) + '">' + ic('boss') + ' Fight: ' + esc(oldest.title.length > 40 ? oldest.title.slice(0, 40) + '…' : oldest.title) + (daysSince(oldest.created_at) >= 1 ? ' (' + daysSince(oldest.created_at) + 'd old)' : '') + '</button></div>' +
+        '<div class="muted small">Or open ' + ic('more') + ' on any quest and tap "Make boss".</div></div>'
       );
     }
     return '<div class="card boss idle"><div class="boss-tag">NO BOSS YET</div><div class="muted">Add your quests below, then pick the scariest one as today\'s boss.</div></div>';
@@ -396,7 +398,7 @@
     const d = new Date(); d.setHours(12, 0, 0, 0); d.setDate(d.getDate() - 6);
     for (let i = 0; i < 7; i++) {
       const k = Q.dayKey(d);
-      out.push('<div class="day"><div class="dot ' + (s.days.has(k) ? 'on' : '') + (i === 6 ? ' today' : '') + '">' + (s.days.has(k) ? '✓' : '') + '</div>' + d.toLocaleDateString(undefined, { weekday: 'narrow' }) + '</div>');
+      out.push('<div class="day"><div class="dot ' + (s.days.has(k) ? 'on' : '') + (i === 6 ? ' today' : '') + '">' + (s.days.has(k) ? ic('check') : '') + '</div>' + d.toLocaleDateString(undefined, { weekday: 'narrow' }) + '</div>');
       d.setDate(d.getDate() + 1);
     }
     return out.join('');
@@ -419,12 +421,12 @@
       '<div class="section-h"><span>Active quests (' + active.length + ')</span></div>' +
       (active.length ? '<ul class="list">' + active.map((t) => taskRow(t, today)).join('') + '</ul>' : '<div class="card empty">Nothing on the board. Add a quest, make it small and concrete.</div>') +
       (done.length
-        ? '<button class="linkish" data-act="showdone">' + (ui.showDone ? '▾' : '▸') + ' Completed (' + done.length + ')</button>' +
+        ? '<button class="linkish" data-act="showdone">' + ic(ui.showDone ? 'chevron-down' : 'chevron-right') + ' Completed (' + done.length + ')</button>' +
           (ui.showDone ? '<ul class="list">' + done.map((t) => taskRow(t, today)).join('') + '</ul>' : '')
         : '') +
       '</div><div class="stack q-side">' +
       '<div class="card"><div class="section-h" style="margin-bottom:10px"><span>This week</span><span class="muted small">+' + s.xpToday + ' XP today</span></div><div class="week">' + weekDots(s) + '</div></div>' +
-      (nextBadge ? '<div class="card"><div class="muted small">NEXT BADGE</div><div style="font-weight:800;margin-top:4px">' + nextBadge.icon + ' ' + esc(nextBadge.name) + '</div><div class="muted small">' + esc(nextBadge.desc) + '</div></div>' : '') +
+      (nextBadge ? '<div class="card"><div class="muted small">NEXT BADGE</div><div style="font-weight:800;margin-top:4px">' + ic(nextBadge.icon) + ' ' + esc(nextBadge.name) + '</div><div class="muted small">' + esc(nextBadge.desc) + '</div></div>' : '') +
       '</div></div>'
     );
   }
@@ -447,8 +449,8 @@
     return (
       '<div class="focus-wrap">' +
       (fin
-        ? '<div class="card boss won"><div class="boss-tag">🎯 SESSION COMPLETE</div><div class="boss-title">+' + fin.xp + ' XP</div>' +
-          '<div class="row">' + (finTask ? '<button class="btn primary" data-act="finishTask" data-id="' + esc(finTask.id) + '">✓ Mark "' + esc(finTask.title.slice(0, 28)) + '" done</button>' : '') +
+        ? '<div class="card boss won"><div class="boss-tag">' + ic('target') + ' SESSION COMPLETE</div><div class="boss-title">+' + fin.xp + ' XP</div>' +
+          '<div class="row">' + (finTask ? '<button class="btn primary" data-act="finishTask" data-id="' + esc(finTask.id) + '">' + ic('check') + ' Mark "' + esc(finTask.title.slice(0, 28)) + '" done</button>' : '') +
           '<button class="btn" data-act="dismissFinish">Dismiss</button></div></div>'
         : '') +
       '<div class="card center"><div class="muted small">PICK A TARGET, THEN START</div>' +
@@ -456,7 +458,7 @@
       '<div class="chips">' + [10, 25, 45, 60].map((m) => '<button class="chipb ' + (ui.focusMin === m ? 'on' : '') + '" data-act="min" data-m="' + m + '">' + m + ' min</button>').join('') + '</div>' +
       '<div style="margin:14px 0 4px;text-align:left"><label>Working on<select id="focusTask"><option value="">Deep work (no specific quest)</option>' +
       act.map((t) => '<option value="' + esc(t.id) + '"' + (ui.focusTask === t.id ? ' selected' : '') + '>' + esc(t.title) + '</option>').join('') + '</select></label></div>' +
-      '<button class="btn primary big" style="width:100%;margin-top:10px" data-act="start">▶ Start · earn ' + ui.focusMin * Q.FOCUS_XP_PER_MIN + ' XP</button></div>' +
+      '<button class="btn primary big" style="width:100%;margin-top:10px" data-act="start">' + ic('play') + ' Start · earn ' + ui.focusMin * Q.FOCUS_XP_PER_MIN + ' XP</button></div>' +
       '<div class="card"><div class="muted small">FOCUS TOTALS</div><div class="stats" style="margin-top:8px"><div class="stat"><b>' + s.focusSessions + '</b><span>sessions</span></div><div class="stat"><b>' + fmtMin(s.focusMin) + '</b><span>total focus</span></div></div></div>' +
       '</div>'
     );
@@ -470,20 +472,20 @@
       '<div class="stats">' +
       [
         [s.done, 'quests completed'], [s.bosses, 'bosses slain'], [fmtMin(s.focusMin), 'focus time'],
-        [s.streak + ' 🔥', 'current streak'], [s.best, 'best streak'], [s.bestDay, 'best day (quests)'],
+        [s.streak + ' ' + ic('flame'), 'current streak'], [s.best, 'best streak'], [s.bestDay, 'best day (quests)'],
       ].map((x) => '<div class="stat"><b>' + x[0] + '</b><span>' + x[1] + '</span></div>').join('') +
       '</div>' +
       '<div class="card"><div class="section-h" style="margin-bottom:10px"><span>Badges</span><span class="muted small">' + s.badges.size + '/' + Q.BADGES.length + '</span></div><div class="badges">' +
-      Q.BADGES.map((b) => { const on = s.badges.has(b.id); return '<div class="badge ' + (on ? '' : 'locked') + '"><div class="b-ic">' + (on ? b.icon : '🔒') + '</div><div class="b-n">' + esc(b.name) + '</div><div class="b-d">' + esc(b.desc) + '</div></div>'; }).join('') +
+      Q.BADGES.map((b) => { const on = s.badges.has(b.id); return '<div class="badge ' + (on ? '' : 'locked') + '"><div class="b-ic">' + ic(on ? b.icon : 'lock') + '</div><div class="b-n">' + esc(b.name) + '</div><div class="b-d">' + esc(b.desc) + '</div></div>'; }).join('') +
       '</div></div>' +
       '<div class="card kv"><div class="section-h"><span>Account</span></div>' +
       '<div>' + (LOCAL_MODE ? '<b>Local-only mode.</b> <span class="muted">No Supabase config found in config.js, so there is no login and no sync.</span>' : 'Signed in as <b>' + esc(user.email || '') + '</b>') + '</div>' +
       (LOCAL_MODE ? '' : '<div class="muted small">' + (navigator.onLine ? 'Online' : 'Offline') + ' · ' + (ui.sync.at ? 'last sync ' + new Date(ui.sync.at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : 'not synced yet') + ' · ' + pending() + ' change(s) waiting</div>') +
       (ui.sync.err ? '<div class="err small">Last sync error: ' + esc(ui.sync.err) + '</div>' : '') +
-      '<div class="row">' + (LOCAL_MODE ? '' : '<button class="btn" data-act="sync">⟳ Sync now</button>') +
-      '<button class="btn" data-act="mute">' + (muted() ? '🔇 Sound off' : '🔊 Sound on') + '</button>' +
+      '<div class="row">' + (LOCAL_MODE ? '' : '<button class="btn" data-act="sync">' + ic('refresh') + ' Sync now</button>') +
+      '<button class="btn" data-act="mute">' + (muted() ? ic('sound-off') + ' Sound off' : ic('sound-on') + ' Sound on') + '</button>' +
       (LOCAL_MODE ? '' : '<button class="btn danger" data-act="logout">Log out</button>') + '</div></div>' +
-      (standalone ? '' : '<div class="card kv"><b>📲 Install it</b><span class="muted">iPhone: Safari → Share → <b>Add to Home Screen</b>. Then open it from the icon and log in once there. Desktop Chrome/Edge: use the install icon in the address bar.</span></div>')
+      (standalone ? '' : '<div class="card kv"><b>' + ic('install') + ' Install it</b><span class="muted">iPhone: Safari → Share → <b>Add to Home Screen</b>. Then open it from the icon and log in once there. Desktop Chrome/Edge: use the install icon in the address bar.</span></div>')
     );
   }
 

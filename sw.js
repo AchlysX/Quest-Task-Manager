@@ -1,9 +1,9 @@
 /* Quest Log service worker: makes the app load and work offline.
    Strategy: serve from cache instantly, refresh the cache in the background (stale-while-revalidate).
    Bump VERSION when you ship changes so old caches are cleaned up. */
-const VERSION = 'quest-v1';
+const VERSION = 'quest-v2';
 const CORE = [
-  './', 'index.html', 'styles.css', 'app.js', 'logic.js', 'config.js',
+  './', 'index.html', 'styles.css', 'app.js', 'logic.js', 'icons.js', 'config.js',
   'manifest.webmanifest', 'vendor/supabase.js',
   'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png',
 ];
