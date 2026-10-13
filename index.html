@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Quest Log</title>
+<meta name="theme-color" content="#0f1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Quest Log">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div id="boot" class="boot">⚡</div>
+
+<section id="login" class="login" hidden>
+  <form id="loginForm" class="login-card" autocomplete="on">
+    <div class="logo">⚡</div>
+    <h1>Quest Log</h1>
+    <p class="muted">Log in once. This device stays logged in.</p>
+    <label>Email
+      <input id="email" type="email" name="email" autocomplete="username" inputmode="email" autocapitalize="off" autocorrect="off" required>
+    </label>
+    <label>Password
+      <input id="password" type="password" name="password" autocomplete="current-password" required>
+    </label>
+    <button class="btn primary big" id="loginBtn" type="submit">Enter</button>
+    <p id="loginErr" class="err" role="alert"></p>
+  </form>
+</section>
+
+<div id="app" class="app" hidden>
+  <aside class="side">
+    <div class="brand"><span>⚡</span> Quest Log</div>
+    <nav id="sideNav" class="side-nav"></nav>
+  </aside>
+  <main class="main">
+    <div id="hud" class="hud"></div>
+    <div id="view" class="view"></div>
+  </main>
+  <nav id="tabbar" class="tabbar"></nav>
+</div>
+
+<div id="toasts" class="toasts" aria-live="polite"></div>
+<div id="modal" class="modal-wrap" hidden></div>
+<canvas id="fx" class="fx"></canvas>
+
+<script src="vendor/supabase.js"></script>
+<script src="config.js"></script>
+<script src="logic.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
